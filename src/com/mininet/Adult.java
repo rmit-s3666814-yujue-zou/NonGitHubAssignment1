@@ -69,8 +69,13 @@ public class Adult extends Person {
         System.out.print("Has Child ? : ");
         if(hasChild()) {
             System.out.println("Yes");
-            System.out.println("Children : ");
-            System.out.println(child.getName() + " - Child");
+            System.out.println("Family : ");
+            for(Relationship r:getFriends()) {
+                if(!r.getRelation().equals("Friend")) {
+                    System.out.println(r.getPerson().getName() + " - " + r.getRelation());
+                }
+
+            }
         } else {
             System.out.println("No");
         }

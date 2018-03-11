@@ -1,7 +1,7 @@
 package com.mininet;
 
 public class Adult extends Person {
-    public Children child;
+    private Children child;
 
     public Adult(String name, int age, String sex) { super(name, age, sex); }
     public Adult(String name, int age, String sex, String status) {
@@ -38,7 +38,7 @@ public class Adult extends Person {
         return child;
     }
 
-
+    @Override
     public void addRelation(Person person) {
         addRelation(person, "Friend");
     }
@@ -90,10 +90,7 @@ public class Adult extends Person {
     }
 
     public boolean hasChild() {
-        if(child == null) {
-            return false;
-        } else {
-            return true;
-        }
+        // if child not null return true, if child is null return false
+        return child != null;
     }
 }

@@ -4,7 +4,6 @@ public class Children extends Person {
     private Adult father;
     private Adult mother;
 
-
     public Children(String name, int age, String sex, String status, Adult father, Adult mother) {
         super(name, age, sex, status);
         addParents(father, mother);
@@ -14,24 +13,14 @@ public class Children extends Person {
         super(name, age, sex);
         addParents(father, mother);
     }
-    public Adult getFather() {
-        return father;
-    }
-
-    public Adult getMother() {
-        return mother;
-    }
 
     private void addParents(Adult father, Adult mother) {
         this.father = father;
         this.mother = mother;
         addRelation(father, mother);
-
-//        father.addRelation(this, "Child");
-//        mother.addRelation(this, "Child");
     }
 
-    public void addRelation(Adult father, Adult mother) {
+    private void addRelation(Adult father, Adult mother) {
         // adding children and husband / wife relation
         father.addRelation(this, mother);
         mother.addRelation(this, father);
@@ -64,16 +53,13 @@ public class Children extends Person {
                 friendNum++;
             }
         }
-
-
     }
 
     @Override
     public void addRelation(Person person, String relation) {
-        // duplicate handler
         int minRange = getAge()-3;
         int maxRange = getAge()+3;
-        if(getAge() > 2 && person.getAge() < 16) {
+        if(getAge() > 2 && (person.getAge() > 2 && person.getAge() < 16)) {
             if(person.getAge() >= minRange && person.getAge() <= maxRange) {
                 boolean isFriend = false;
                 for(Relationship rel:getFriends()) {
@@ -88,5 +74,9 @@ public class Children extends Person {
                 }
             }
         }
+    }
+
+    public void addRelation(Person person) {
+        addRelation(person, "Friend");
     }
 }

@@ -62,5 +62,5 @@ public abstract class Person {
 
     public abstract void addRelation(Person person, String relation);
 
-//    public abstract void addRelation(Person person);
+    public abstract void addRelation(Person person);
 }

@@ -2,7 +2,7 @@ package com.mininet;
 
 import java.util.ArrayList;
 
-public abstract class Person {
+abstract class Person implements PPerson {
     private String name;
     private int age;
     private char sex;
@@ -36,6 +36,10 @@ public abstract class Person {
         return sex;
     }
 
+    public ArrayList<Relationship> getFriends() {
+        return friends;
+    }
+
     public void setStatus(String status) {
         this.status = status;
     }
@@ -51,16 +55,4 @@ public abstract class Person {
     public void setSex(String sex) {
         this.sex = sex.toUpperCase().charAt(0);
     }
-
-    public ArrayList<Relationship> getFriends() {
-        return friends;
-    }
-
-//    public abstract void profileMenu();
-
-    public abstract void printProfile();
-
-    public abstract void addRelation(Person person, String relation);
-
-    public abstract void addRelation(Person person);
 }

@@ -9,7 +9,8 @@ public class Adult extends Person {
     }
 
     public void addRelation(Children child, Adult mate) {
-        addRelation(child, "Child");
+//        addRelation(child, "Child"); // cant use this, this one have age constraint
+        getFriends().add(new Relationship(child, "Child"));
         this.child = child;
         boolean isFound = false;
 
@@ -34,8 +35,13 @@ public class Adult extends Person {
         }
     }
 
-    public Children getChild() {
+    Children getChild() {
         return child;
+    }
+
+    public boolean hasChild() {
+        // if child not null return true, if child is null return false
+        return child != null;
     }
 
     @Override
@@ -46,22 +52,23 @@ public class Adult extends Person {
     @Override
     public void addRelation(Person person, String relation) {
         // duplicate handler
-        boolean isFriend = false;
-        for(Relationship rel:getFriends()) {
-            if(rel.getPerson().equals(person)) {
-                isFriend = true;
+        if(person instanceof Adult) {
+            boolean isFriend = false;
+            for(Relationship rel:getFriends()) {
+                if(rel.getPerson().equals(person)) {
+                    isFriend = true;
+                }
             }
-        }
-        // two way relation
-        if(!isFriend) {
-            getFriends().add(new Relationship(person, relation));
-            person.getFriends().add(new Relationship(this, relation));
+            // two way relation
+            if(!isFriend) {
+                getFriends().add(new Relationship(person, relation));
+                person.getFriends().add(new Relationship(this, relation));
+            }
         }
     }
 
     @Override
     public void printProfile() {
-        System.out.println(getName() + " is Selected");
         System.out.println("Name : " + getName());
         System.out.println("Age : " + getAge());
         System.out.println("Sex : " + getSex());
@@ -87,10 +94,5 @@ public class Adult extends Person {
                 friendNum++;
             }
         }
-    }
-
-    public boolean hasChild() {
-        // if child not null return true, if child is null return false
-        return child != null;
     }
 }

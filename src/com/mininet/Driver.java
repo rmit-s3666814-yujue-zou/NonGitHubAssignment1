@@ -9,7 +9,6 @@ public class Driver {
 
     private Scanner sc = new Scanner(System.in);
 
-
     public void start() {
 //        Person personTest = new Adult("Test", 21, "m", "Working");
 
@@ -29,17 +28,19 @@ public class Driver {
         persons.get(3).addRelation(persons.get(2));
 
 
-        // test case
+//        // test case
         // don son try to add alice, not allowed
         persons.get(5).addRelation(persons.get(0)); // assertFalse
         // don son try to add alice son, allowed (10, 10)
-        persons.get(5).addRelation(persons.get(4)); // assertTrue
+//        persons.get(5).addRelation(persons.get(4)); // assertTrue
+        // alice try to add don son, not allowed
+        persons.get(0).addRelation(persons.get(5)); // assertFalse
 
         // END SETUP
         boolean isStart;
         do {
             isStart = displayMenu();
-        } while(isStart);
+        } while (isStart);
     }
 
     private boolean displayMenu() {
@@ -52,182 +53,211 @@ public class Driver {
         System.out.println();
         System.out.println("?. Exit");
         System.out.print("Enter an option: ");
-        String option = sc.next();
-
-        if(option.equals("1")) {
-            listEveryone();
-        } else if(option.equals("2")) {
-            selectPerson();
-        } else if(option.equals("3")) {
-            System.out.println(checkDirect() ? "Direct":"Doesn't know each other");
-        } else if(option.equals("4")) {
-            System.out.println(addPerson() ? "Add Person Success":"Add Person Fail");
-        } else if(option.equals("?")) {
-            return false;
+        String option = sc.nextLine();
+        switch (option) {
+            case "1":
+                listPersons("MiniNet List", persons);
+                break;
+            case "2":
+                listPersons("MiniNet List", persons);
+                openProfile(selectPerson("Person", persons));
+                break;
+            case "3":
+                checkDirect();
+                break;
+            case "4":
+                addPerson();
+                break;
+            case "?":
+                return false;
+            default:
+                System.out.println("Invalid");
+                return true;
         }
         return true;
     }
 
-    private void listEveryone() {
-        System.out.println("=============");
-        System.out.println("MiniNet List :");
-        for(int i=0; i<persons.size(); i++) {
-            System.out.println(i+1 + ". " + persons.get(i).getName() + " - " + persons.get(i).getClass().getSimpleName());
+    private void listPersons(String type, ArrayList<Person> persons) {
+        System.out.println("============");
+        System.out.println(type + " : ");
+        int personNum = 1;
+        for (Person p : persons) {
+            System.out.println(personNum + ". " + p.getName() + " - " +
+                    p.getClass().getSimpleName() + " : " + p.getStatus());
+            personNum++;
         }
         System.out.println("=============");
     }
 
-    private boolean checkDirect() {
-        listEveryone();
-        System.out.print("Enter First Person Name : ");
-        sc.nextLine();
-        String firstPersonName = sc.nextLine().toUpperCase();
-        System.out.print("Enter Second Person Name : ");
-        String secondPersonName = sc.nextLine().toUpperCase();
-
-        int firstPersonIndex = 0;
-        int secondPersonIndex = 0;
-
-        for(int i=0; i<persons.size(); i++) {
-            if(persons.get(i).getName().equals(firstPersonName)) {
-                firstPersonIndex = i;
-            } else if(persons.get(i).getName().equals(secondPersonName)) {
-                secondPersonIndex = i;
-            }
-        }
-
-        Person person1 = persons.get(firstPersonIndex);
-        Person person2 = persons. get(secondPersonIndex);
+    private void checkDirect() {
+        // print from that list
+        listPersons("MiniNet List", persons);
+        // select from that list
+        Person person1 = selectPerson("First Person", persons);
+        Person person2 = selectPerson("Second Person", persons);
 
         // two way verification
         boolean person1ToPerson2 = false;
         boolean person2ToPerson1 = false;
 
-        // person1 friendlist contains person2 object
-        for(Relationship r:person1.getFriends()) {
-            if(r.getPerson().equals(person2)) {
+        for (Relationship r : person1.getFriends()) {
+            if (r.getPerson().equals(person2)) {
                 person1ToPerson2 = true;
             }
         }
 
-        for(Relationship r:person2.getFriends()) {
-            if(r.getPerson().equals(person1)) {
+        for (Relationship r : person2.getFriends()) {
+            if (r.getPerson().equals(person1)) {
                 person2ToPerson1 = true;
             }
         }
-        return person1ToPerson2 && person2ToPerson1;
+        if (person1ToPerson2 && person2ToPerson1) {
+            System.out.println(person1.getName() + " and " + person2.getName() + " is a Direct Friend");
+        } else {
+            System.out.println(person1.getName() + " Doesn't Know " + person2.getName());
+        }
     }
 
-    private void selectPerson() {
-        listEveryone();
-        System.out.print("Insert Person Name : ");
-        sc.nextLine();
-        String selectedName = sc.nextLine().toUpperCase();
+    private Person selectPerson(String type, ArrayList<Person> persons) {
         int selectedIndex = 0;
-        for(int i=0; i<persons.size(); i++) {
-            if(selectedName.equals(persons.get(i).getName())) {
-                selectedIndex = i;
-            }
-        }
-        Person selected = persons.get(selectedIndex);
-
-        boolean isOnMenu;
+        boolean isChoose = false;
         do {
-            selected.printProfile();
-            isOnMenu = profileMenu(selected);
-        } while(isOnMenu);
+            System.out.print("Insert " + type + " Name : ");
+            String selectedName = sc.nextLine().toUpperCase();
+            for (int i = 0; i < persons.size(); i++) {
+                if (selectedName.equals(persons.get(i).getName())) {
+                    selectedIndex = i;
+                    isChoose = true;
+                }
+            }
+            System.out.println(isChoose ? selectedName + " is Selected" : selectedName + " not Found, Try Again.");
+        } while (!isChoose);
+        return persons.get(selectedIndex);
+    }
 
+    private void openProfile(Person person) {
+        boolean isOpen;
+        do {
+            person.printProfile();
+            isOpen = profileMenu(person);
+        } while (isOpen);
     }
 
     private boolean profileMenu(Person person) {
         System.out.println(person.getName() + " Menu");
+        System.out.println("0. Add Friend");
         System.out.println("1. Update Name");
         System.out.println("2. Update Age");
         System.out.println("3. Update Sex");
         System.out.println("4. Update Status");
         System.out.println("5. Delete Profile");
-        if(person instanceof Adult && ((Adult) person).hasChild()) {
+        if (person instanceof Adult && ((Adult) person).hasChild()) {
             System.out.println("6. See Children");
         }
         System.out.println("\n?. Exit Profile");
         System.out.print("Select Option : ");
-        String option = sc.next();
-        if(option.equals("1")) {
+        String option = sc.nextLine();
+        if (option.equals("0")) {
+            ArrayList<Person> tempList = new ArrayList<>();
+            for(Person p:persons) {
+                if(person instanceof Adult && p instanceof Adult) {
+                    tempList.add(p);
+                } else if(person instanceof Children && p instanceof Children) {
+                    tempList.add(p);
+                }
+            }
+            tempList.remove(person);
+            for(Relationship r:person.getFriends()) {
+                tempList.remove(r.getPerson());
+            }
+            if(tempList.size() != 0) {
+                listPersons("MiniNet List", tempList);
+                person.addRelation(selectPerson("Person", persons));
+            } else {
+                System.out.println("No More Person Too Add");
+            }
+        } else if (option.equals("1")) {
             System.out.print("Insert New Name : ");
-            sc.nextLine();
             String name = sc.nextLine();
             person.setName(name);
             System.out.println("Name Updated.");
-        } else if(option.equals("2")) {
+        } else if (option.equals("2")) {
             System.out.print("Insert New Age : ");
             int age = sc.nextInt();
+            sc.nextLine();
             person.setAge(age);
             System.out.println("Age Updated.");
-        } else if(option.equals("3")) {
+        } else if (option.equals("3")) {
             System.out.print("Insert New Sex (M/F) : ");
-            sc.nextLine();
+//            sc.nextLine();
             String sex = sc.nextLine();
             person.setSex(sex);
             System.out.println("Sex Updated.");
-        } else if(option.equals("4")) {
+        } else if (option.equals("4")) {
             System.out.print("Insert New Status : ");
-            sc.nextLine();
+//            sc.nextLine();
             String status = sc.nextLine();
             person.setStatus(status);
             System.out.println("Status Updated.");
-        } else if(option.equals("5")) {
+        } else if (option.equals("5")) {
             System.out.print("Are You Sure You Want to Delete This Person ? (Y/N) : ");
-            sc.nextLine();
+//            sc.nextLine();
             char confirm = sc.nextLine().toUpperCase().charAt(0);
-            if(confirm == 'Y') {
+            if (confirm == 'Y') {
                 System.out.println(person.getName() + " Removed");
+                // loop through person friend list
+                int deleteIndex = 0;
+                for (Relationship r : person.getFriends()) {
+                    // access person friend friendlist
+                    int friendNum = 0;
+                    for (Relationship p2 : r.getPerson().getFriends()) {
+                        if (p2.getPerson().equals(person)) {
+                            deleteIndex = friendNum;
+                        }
+                        friendNum++;
+                    }
+                    Relationship selectedRelation = r.getPerson().getFriends().get(deleteIndex);
+                    r.getPerson().getFriends().remove(selectedRelation);
+//                    r.getPerson().getFriends().get(i).getPerson(); // this is relationship, cannot remove directly, need to get the index
+                    // delete person from friend friendlist
+                }
                 persons.remove(person);
+
                 return false;
             } else {
                 System.out.println("Cancelled.");
             }
-        } else if(option.equals("6") && ((Adult) person).hasChild()) {
+        } else if (option.equals("6") && ((Adult) person).hasChild()) {
 //            printProfile(((Adult) person).getChild());
             ((Adult) person).getChild().printProfile();
+            System.out.println();
             // need confirmation to go back to profile
-            System.out.print("?. Go back to Profile : ");
             String back;
             do {
-                 back = sc.next();
-            } while(!back.equals("?"));
-
-            System.out.println();
-        } else if(option.equals("?")) {
+                System.out.print("Type ? and Enter to Go Back to " + person.getName() + " Profile : ");
+                back = sc.nextLine();
+            } while (!back.equals("?"));
+        } else if (option.equals("?")) {
             return false;
         }
         return true;
     }
 
-//    public void
-
-    private boolean addPerson() {
+    private void addPerson() {
         System.out.print("Insert Person Name : ");
-        sc.nextLine();
-        String name = sc.nextLine();
+        String name = sc.nextLine().toUpperCase();
         System.out.print("Insert Person Sex (M/F) : ");
-        String sex = sc.next();
-        System.out.print("Insert the Age ( Adult is > 16 ) : ");
+        String sex = sc.nextLine();
+        System.out.print("Insert the Age ( Adult is > 15 ) : ");
         int age = sc.nextInt();
+        sc.nextLine();
         if(age > 15) {
             persons.add(new Adult(name, age, sex));
-            return true;
+            System.out.println(name + " Added as Adult");
         } else {
+            // construct list
             ArrayList<Person> tempFather = new ArrayList<>();
             ArrayList<Person> tempMother = new ArrayList<>();
-//            for(int i=0; i<persons.size(); i++) {
-//                if(persons.get(i) instanceof Adult && !((Adult) persons.get(i)).hasChild()) {
-//                    if(persons.get(i).getSex() == 'M') {
-//                        tempFather.add(persons.get(i));
-//                    } else {
-//                        tempMother.add(persons.get(i));
-//                    }
-//                }
-//            }
             for(Person p:persons) {
                 if(p instanceof Adult && !((Adult) p).hasChild()) {
                     if(p.getSex() == 'M') {
@@ -238,40 +268,18 @@ public class Driver {
                 }
             }
             if(tempFather.size() < 1) {
-                System.out.println("No Single Male Available");
-                return false;
+                System.out.println("Fail to Add " + name + ", No Single Male Available");
             } else if (tempMother.size() < 1){
-                System.out.println("No Single Female Available");
-                return false;
+                System.out.println("Fail to Add " + name + ", No Single Female Available");
             } else {
-                for(int i=0; i<tempFather.size(); i++) {
-                    System.out.println(i+1 + ". " + tempFather.get(i).getName());
-                }
-                System.out.print("Insert Father Name : ");
-                sc.nextLine();
-                String fatherName = sc.nextLine();
-                int fatherIndex = 0;
-                for(int i=0; i<tempFather.size(); i++) {
-                    if(tempFather.get(i).getName().equals(fatherName)) {
-                        fatherIndex = i;
-                    }
-                }
-                Adult selectedFather = (Adult) tempFather.get(fatherIndex);
+                listPersons("Father List", tempFather);
+                Adult selectedFather = (Adult) selectPerson("Father", tempFather);
 
-                for(int i=0; i<tempMother.size(); i++) {
-                    System.out.println(i+1 + ". " + tempMother.get(i).getName());
-                }
-                System.out.print("Insert Mother Name : ");
-                String motherName = sc.nextLine();
-                int motherIndex = 0;
-                for(int i=0; i<tempMother.size(); i++) {
-                    if(tempMother.get(i).getName().equals(motherName)) {
-                        motherIndex = i;
-                    }
-                }
-                Adult selectedMother = (Adult) tempMother.get(motherIndex);
+                listPersons("Mother List", tempMother);
+                Adult selectedMother = (Adult) selectPerson("Mother", tempMother);
                 persons.add(new Children(name, age, sex, selectedFather, selectedMother));
-                return true;
+                System.out.println(name + " Added as Children of " +
+                        selectedFather.getName() + " and " + selectedMother.getName());
             }
         }
     }

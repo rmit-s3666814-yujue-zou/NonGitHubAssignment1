@@ -35,9 +35,9 @@ public class Children extends Person {
             }
         }
     }
+
     @Override
     public void printProfile() {
-        System.out.println(getName() + " is Selected");
         System.out.println("Name : " + getName());
         System.out.println("Age : " + getAge());
         System.out.println("Sex : " + getSex());
@@ -59,7 +59,7 @@ public class Children extends Person {
     public void addRelation(Person person, String relation) {
         int minRange = getAge()-3;
         int maxRange = getAge()+3;
-        if(getAge() > 2 && (person.getAge() > 2 && person.getAge() < 16)) {
+        if(getAge() > 2 && (person.getAge() > 2 && person instanceof Children)) {
             if(person.getAge() >= minRange && person.getAge() <= maxRange) {
                 boolean isFriend = false;
                 for(Relationship rel:getFriends()) {

@@ -1,6 +1,6 @@
 package com.mininet;
 
-public interface PPerson {
+public interface IPerson {
 
     void printProfile();
 

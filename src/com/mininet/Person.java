@@ -2,7 +2,7 @@ package com.mininet;
 
 import java.util.ArrayList;
 
-abstract class Person implements PPerson {
+abstract class Person implements IPerson {
     private String name;
     private int age;
     private char sex;
